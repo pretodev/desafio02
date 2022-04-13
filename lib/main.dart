@@ -7,6 +7,7 @@ import 'package:flutter_desafio_2/pages/base_page.dart';
 import 'package:flutter_desafio_2/pages/cotadas_page.dart';
 import 'package:flutter_desafio_2/pages/resultado_page.dart';
 import 'package:flutter_desafio_2/repositories/cotacao_repository.dart';
+import 'package:flutter_desafio_2/splash/splash_screen.dart';
 import 'package:flutter_desafio_2/theme/colors.dart';
 
 void main() async {
@@ -19,7 +20,9 @@ void main() async {
   );
   print(result);
 
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    home: SplashScreen(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -30,13 +33,35 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final pageController = PageController();
-
   @override
-  void dispose() {
-    pageController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            primary: AppColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            minimumSize: const Size(163.0, 43.0),
+            elevation: 0,
+            textStyle: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              letterSpacing: 0.75,
+            ),
+          ),
+        ),
+      ),
+      home: const SplashScreen(),
+    );
   }
+}
+
+class HomeScreen extends StatelessWidget {
+  final pageController = PageController();
 
   void navigateTo(int page) {
     pageController.animateToPage(
@@ -46,44 +71,25 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  HomeScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AppCubit>(
       create: (context) => AppCubit(),
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              primary: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              minimumSize: const Size(163.0, 43.0),
-              elevation: 0,
-              textStyle: const TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                letterSpacing: 0.75,
-              ),
-            ),
+      child: AppNavigator(
+        pageController: pageController,
+        pages: [
+          BasePage(
+            onNextPage: () => navigateTo(1),
           ),
-        ),
-        home: AppNavigator(
-          pageController: pageController,
-          pages: [
-            BasePage(
-              onNextPage: () => navigateTo(1),
-            ),
-            CotadasPage(
-              onNextPage: () => navigateTo(2),
-            ),
-            ResultadoPage(
-              onFinish: () => navigateTo(0),
-            ),
-          ],
-        ),
+          CotadasPage(
+            onNextPage: () => navigateTo(2),
+          ),
+          ResultadoPage(
+            onFinish: () => navigateTo(0),
+          ),
+        ],
       ),
     );
   }
